@@ -1,0 +1,38 @@
+{
+    "name": "litphp/air",
+    "description": "simple & smart dependency injection",
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "McFog Wang",
+            "email": "mcfogw@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Lit\\Air\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lit\\Air\\Tests\\": "tests"
+        }
+    },
+    "provides": {
+        "psr/container-implementation": "^1.0"
+    },
+    "require": {
+        "php": "^7.1",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "phalcon/zephir": "^0.9.11",
+        "phpunit/phpunit": "^6.4"
+    },
+    "suggest": {
+        "symfony/yaml": "parse YAML configuration"
+    },
+    "scripts": {
+        "test": "phpunit -c ."
+    }
+}

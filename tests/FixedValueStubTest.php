@@ -1,0 +1,21 @@
+<?php
+
+namespace Lit\Air\Tests;
+
+use Lit\Air\Psr\Container;
+use Lit\Air\Recipe\FixedValueRecipe;
+
+class FixedValueStubTest extends AbstractTestCase
+{
+    public function testSmoke()
+    {
+        $key = self::randKey();
+        $obj = new \stdClass();
+        $stub = Container::value($obj);
+        self::assertTrue($stub instanceof FixedValueRecipe);
+
+        $returnValue = $this->container->define($key, $stub);
+        self::assertSame($this->container, $returnValue, '->define return $this');
+        $this->assertKeyExistWithValue($key, $obj);
+    }
+}
