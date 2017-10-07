@@ -15,10 +15,10 @@ class AutowireRecipe implements RecipeInterface
      */
     protected $extra;
 
-    public function __construct(?string $className = null, array $extra = [])
+    public function __construct(array $extra = [], ?string $className = null)
     {
-        $this->className = $className;
         $this->extra = $extra;
+        $this->className = $className;
     }
 
     public function resolve(WritableContainerInterface $container, ?string $id = null)

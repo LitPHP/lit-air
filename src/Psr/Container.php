@@ -36,9 +36,9 @@ class Container implements ContainerInterface, WritableContainerInterface
         return new AliasRecipe($alias, $extra);
     }
 
-    public static function autowire(?string $className = null, array $extra = [])
+    public static function autowire(array $extra = [], ?string $className = null)
     {
-        return new AutowireRecipe($className, $extra);
+        return new AutowireRecipe($extra, $className);
     }
 
     public static function cached(callable $factory)

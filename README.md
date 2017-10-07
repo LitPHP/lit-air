@@ -3,6 +3,8 @@ Lit Air
 
 > Dependency Injection for Lit
 
+[![Build Status](https://travis-ci.org/LitPHP/lit-air.svg?branch=master)](https://travis-ci.org/LitPHP/lit-air)
+
 ### Features
 
 - PSR-11 compliant
