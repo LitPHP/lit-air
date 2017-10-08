@@ -2,7 +2,7 @@
 
 use Lit\Air\WritableContainerInterface;
 
-class AliasRecipe implements RecipeInterface
+class AliasRecipe extends AbstractRecipe
 {
     /**
      * @var string

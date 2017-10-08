@@ -1,11 +1,12 @@
 <?php namespace Lit\Air\Injection;
 
 use Lit\Air\Factory;
+use Lit\Air\Psr\ContainerException;
 use ReflectionMethod;
 
 class SetterInjector implements InjectorInterface
 {
-    protected $prefix = ['set', 'inject'];
+    protected $prefixes = ['inject'];
 
     public function inject(Factory $factory, $obj, array $extra = [])
     {
@@ -22,14 +23,30 @@ class SetterInjector implements InjectorInterface
                 $keys[] = $paramClassName = $paramClass->name;
             }
 
-            $value = $factory->produceDependency($class->name, $keys, $paramClassName, $extra);
-            $method->invoke($obj, $value);
+            try {
+                $value = $factory->produceDependency($class->name, $keys, $paramClassName, $extra);
+                $method->invoke($obj, $value);
+            } catch (ContainerException $e) {
+                //ignore
+            }
         }
     }
 
     public function isTarget($obj)
     {
-        return $obj instanceof SetterInjectionInterface;
+        $class = get_class($obj);
+        return defined("$class::SETTER_INJECTOR") && $class::SETTER_INJECTOR === static::class;
+    }
+
+    /**
+     *
+     * @param array $prefixes
+     * @return $this
+     */
+    public function setPrefixes(array $prefixes)
+    {
+        $this->prefixes = $prefixes;
+        return $this;
     }
 
     protected function shouldBeInjected(ReflectionMethod $method)
@@ -46,7 +63,7 @@ class SetterInjector implements InjectorInterface
             return false;
         }
 
-        foreach ($this->prefix as $prefix) {
+        foreach ($this->prefixes as $prefix) {
             if (substr($method->name, 0, strlen($prefix)) === $prefix) {
                 return true;
             }

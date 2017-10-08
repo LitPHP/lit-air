@@ -4,7 +4,7 @@ use Lit\Air\Factory;
 use Lit\Air\Psr\ContainerException;
 use Lit\Air\WritableContainerInterface;
 
-class AutowireRecipe extends AbstractRecipe
+class InstanceRecipe extends AbstractRecipe
 {
     /**
      * @var null|string
@@ -28,6 +28,6 @@ class AutowireRecipe extends AbstractRecipe
             throw new ContainerException('unknown autowire class name');
         }
 
-        return Factory::of($container)->produce($className, $this->extra);
+        return Factory::of($container)->instantiate($className, $this->extra);
     }
 }

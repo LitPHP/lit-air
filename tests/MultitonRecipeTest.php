@@ -5,7 +5,7 @@ namespace Lit\Air\Tests;
 use Lit\Air\Psr\Container;
 use Lit\Air\Recipe\MultitonRecipe;
 
-class MultitonStubTest extends AbstractTestCase
+class MultitonRecipeTest extends AbstractTestCase
 {
 
     public function testSmoke()

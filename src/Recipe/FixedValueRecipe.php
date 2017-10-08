@@ -2,7 +2,7 @@
 
 use Lit\Air\WritableContainerInterface;
 
-class FixedValueRecipe implements RecipeInterface
+class FixedValueRecipe extends AbstractRecipe
 {
     protected $value;
 

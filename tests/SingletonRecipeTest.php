@@ -5,7 +5,7 @@ namespace Lit\Air\Tests;
 use Lit\Air\Psr\Container;
 use Lit\Air\Recipe\SingletonRecipe;
 
-class SingletonStubTest extends AbstractTestCase
+class SingletonRecipeTest extends AbstractTestCase
 {
     public function testSmoke()
     {

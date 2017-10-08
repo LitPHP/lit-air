@@ -111,19 +111,20 @@ class Factory
 
     public function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
     {
+        $currentClassName = $className;
         do {
             if (!empty($extra) && ($value = $this->findFromArray($extra, $keys))) {
                 return $value->getValue();
             }
 
             if (
-                $className
-                && $this->container->has("$className::")
-                && ($value = $this->findFromArray($this->container->get("$className::"), $keys))
+                $currentClassName
+                && $this->container->has("$currentClassName::")
+                && ($value = $this->findFromArray($this->container->get("$currentClassName::"), $keys))
             ) {
                 return $value->getValue();
             }
-        } while ($className = get_parent_class($className));
+        } while ($currentClassName = get_parent_class($currentClassName));
 
         if ($dependencyClassName && $this->container->has($dependencyClassName)) {
             return $this->container->get($dependencyClassName);

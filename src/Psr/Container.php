@@ -7,6 +7,7 @@ use Lit\Air\Recipe\AliasRecipe;
 use Lit\Air\Recipe\AutowireRecipe;
 use Lit\Air\Recipe\CachedRecipe;
 use Lit\Air\Recipe\FixedValueRecipe;
+use Lit\Air\Recipe\InstanceRecipe;
 use Lit\Air\Recipe\MultitonRecipe;
 use Lit\Air\Recipe\RecipeInterface;
 use Lit\Air\Recipe\SingletonRecipe;
@@ -45,20 +46,20 @@ class Container implements ContainerInterface, WritableContainerInterface
         return new AutowireRecipe($className, $extra);
     }
 
-    public static function cached(callable $factory)
+    public static function instance(?string $className = null, array $extra = [])
     {
-        return new CachedRecipe($factory);
+        return new InstanceRecipe($className, $extra);
     }
 
-    public static function multiton(callable $factory)
+    public static function multiton(callable $builder)
     {
-        return new MultitonRecipe($factory);
+        return new MultitonRecipe($builder);
     }
 
 
-    public static function singleton(callable $factory)
+    public static function singleton(callable $builder)
     {
-        return new SingletonRecipe($factory);
+        return new SingletonRecipe($builder);
     }
 
     public static function value($value)
@@ -100,13 +101,13 @@ class Container implements ContainerInterface, WritableContainerInterface
             || ($this->delegateContainer && $this->delegateContainer->has($id));
     }
 
-    public function define($id, RecipeInterface $recipe): self
+    public function define(string $id, RecipeInterface $recipe): self
     {
         $this->recipe[$id] = $recipe;
         return $this;
     }
 
-    public function getRecipe($id): ?RecipeInterface
+    public function getRecipe(string $id): ?RecipeInterface
     {
         if (array_key_exists($id, $this->recipe)) {
             return $this->recipe[$id];
@@ -115,12 +116,35 @@ class Container implements ContainerInterface, WritableContainerInterface
         return null;
     }
 
-    public function hasCacheEntry($id)
+    public function decorateRecipe(string $id, $decorator)
+    {
+        if (!array_key_exists($id, $this->recipe)) {
+            throw new \InvalidArgumentException("recipe [$id] unexists");
+        }
+
+        if (is_callable([$decorator, 'decorate'])) {
+            $doDecorate = [$decorator, 'decorate'];
+        } elseif (is_callable($decorator)) {
+            $doDecorate = $decorator;
+        } else {
+            throw new \InvalidArgumentException("illegal decorator");
+        }
+
+        $recipe = call_user_func($doDecorate, $this->recipe[$id]);
+        if (!$recipe instanceof RecipeInterface) {
+            throw new \LogicException("illegal decorator return value");
+        }
+        $this->recipe[$id] = $recipe;
+
+        return $this;
+    }
+
+    public function hasCacheEntry(string $id)
     {
         return array_key_exists($id, $this->cache);
     }
 
-    public function flush($id): self
+    public function flush(string $id): self
     {
         unset($this->cache[$id]);
         return $this;
@@ -139,11 +163,7 @@ class Container implements ContainerInterface, WritableContainerInterface
 
     public function resolveRecipe($value)
     {
-        if ($value instanceof RecipeInterface) {
-            return $value->resolve($this);
-        }
-
-        return $value;
+        return Configurator::convertToRecipe($value)->resolve($this);
     }
 
     public function set($id, $value): self

@@ -5,7 +5,7 @@ namespace Lit\Air\Tests;
 use Lit\Air\Psr\Container;
 use Lit\Air\Recipe\FixedValueRecipe;
 
-class FixedValueStubTest extends AbstractTestCase
+class FixedValueRecipeTest extends AbstractTestCase
 {
     public function testSmoke()
     {

@@ -3,7 +3,7 @@
 use Lit\Air\Factory;
 use Lit\Air\WritableContainerInterface;
 
-class MultitonRecipe implements RecipeInterface
+class MultitonRecipe extends AbstractRecipe
 {
     /**
      * @var callable

@@ -3,7 +3,7 @@
 use Lit\Air\Factory;
 use Lit\Air\WritableContainerInterface;
 
-class SingletonRecipe implements RecipeInterface
+class SingletonRecipe extends AbstractRecipe
 {
     protected static $cache = [];
     protected $hash;

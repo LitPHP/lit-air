@@ -5,7 +5,7 @@ namespace Lit\Air\Tests;
 use Lit\Air\Factory;
 use Lit\Air\Psr\Container;
 
-class AliasStubTest extends AbstractTestCase
+class AliasRecipeTest extends AbstractTestCase
 {
     public function testSmoke()
     {

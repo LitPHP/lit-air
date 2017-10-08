@@ -3,9 +3,10 @@
 namespace Lit\Air\Tests;
 
 use Lit\Air\Psr\Container;
+use Lit\Air\Recipe\CacheDecoratorRecipe;
 use Lit\Air\Recipe\CachedRecipe;
 
-class CachedStubTest extends AbstractTestCase
+class CacheDecoratorRecipeTest extends AbstractTestCase
 {
     public function testSmoke()
     {
@@ -18,9 +19,9 @@ class CachedStubTest extends AbstractTestCase
             $counter++;
             return $obj;
         };
-        $stub = Container::cached($factory);
+        $stub = Container::multiton($factory)->cached();
 
-        self::assertTrue($stub instanceof CachedRecipe);
+        self::assertTrue($stub instanceof CacheDecoratorRecipe);
 
         $this->container->define($key, $stub);
         $this->container->define($key2, $stub);
