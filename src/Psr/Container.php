@@ -162,4 +162,14 @@ class Container implements ContainerInterface, WritableContainerInterface
 
         return $this;
     }
+
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+
+    public function __isset($name)
+    {
+        return $this->has($name);
+    }
 }
