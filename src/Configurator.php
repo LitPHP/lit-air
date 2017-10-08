@@ -40,14 +40,12 @@ class Configurator
 
         if (
             substr($key, -2) === '::'
-            && class_exists(substr($key, 0, - 2))
+            && class_exists(substr($key, 0, -2))
         ) {
-            $container->set($key, array_combine(array_keys($value), array_map(function ($v) {
-                if (is_scalar($v) || is_resource($v)) {
-                    return $v;
-                }
-                return self::convertToRecipe($v);
-            }, $value)));
+            if (!is_array($value)) {
+                throw new ContainerException('CLASSNAME:: entry must be array');
+            }
+            $container->set($key, self::convertArray($value));
             return;
         }
 
@@ -67,19 +65,39 @@ class Configurator
 
         if (is_array($value)) {
             $type = array_shift($value);
-            switch ($type) {
-                case "alias":
-                case "autowire":
-                case "cached":
-                case "multiton":
-                case "singleton":
-                case "value":
-                    return call_user_func_array([Container::class, $type], $value);
-                default:
-                    throw new ContainerException("cannot understand stub");
+
+            if (array_key_exists($type, [
+                'alias' => 1,
+                'autowire' => 1,
+                'cached' => 1,
+                'multiton' => 1,
+                'singleton' => 1,
+                'value' => 1,
+            ])) {
+                return call_user_func_array([Container::class, $type], $value);
             }
+
+            throw new ContainerException("cannot understand stub");
         }
 
         return Container::value($value);
+    }
+
+    /**
+     * @param array $value
+     * @return array
+     */
+    protected static function convertArray(array $value): array
+    {
+        $result = [];
+        foreach ($value as $k => $v) {
+            if (is_scalar($v) || is_resource($v)) {
+                $result[$k] = $v;
+            } else {
+                $result[$k] = self::convertToRecipe($v);
+            }
+        }
+
+        return $result;
     }
 }

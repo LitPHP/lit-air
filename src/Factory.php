@@ -16,6 +16,8 @@ class Factory
     {
         if ($container instanceof Container) {
             $this->container = $container;
+        } elseif (is_null($container)) {
+            $this->container = new Container();
         } else {
             $this->container = Container::wrap($container);
         }
@@ -110,21 +112,16 @@ class Factory
     public function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
     {
         do {
-            if (!empty($extra)) {
-                foreach ($keys as $key) {
-                    if (isset($extra[$key])) {
-                        return $this->container->resolveRecipe($extra[$key]);
-                    }
-                }
+            if (!empty($extra) && ($value = $this->findFromArray($extra, $keys))) {
+                return $value->getValue();
             }
 
-            if ($className && $this->container->has("$className::")) {
-                $params = $this->container->get("$className::");
-                foreach ($keys as $key) {
-                    if (isset($params[$key])) {
-                        return $this->container->resolveRecipe($params[$key]);
-                    }
-                }
+            if (
+                $className
+                && $this->container->has("$className::")
+                && ($value = $this->findFromArray($this->container->get("$className::"), $keys))
+            ) {
+                return $value->getValue();
             }
         } while ($className = get_parent_class($className));
 
@@ -137,6 +134,17 @@ class Factory
         }
 
         throw new ContainerException('failed to produce dependency');
+    }
+
+    protected function findFromArray($arr, $keys)
+    {
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $arr)) {
+                return Container::value($this->container->resolveRecipe($arr[$key]));
+            }
+        }
+
+        return null;
     }
 
     protected function resolveParams(array $params, string $className, array $extra = [])

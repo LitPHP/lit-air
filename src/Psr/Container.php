@@ -128,7 +128,7 @@ class Container implements ContainerInterface, WritableContainerInterface
 
     public function addInjector(InjectorInterface $injector)
     {
-        if(!isset($this->cache[static::KEY_INJECTORS])) {
+        if (!isset($this->cache[static::KEY_INJECTORS])) {
             $this->cache[static::KEY_INJECTORS] = [$injector];
         } else {
             $this->cache[static::KEY_INJECTORS][] = $injector;

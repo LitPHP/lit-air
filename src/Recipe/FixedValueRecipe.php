@@ -15,4 +15,12 @@ class FixedValueRecipe implements RecipeInterface
     {
         return $this->value;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 }
