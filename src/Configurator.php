@@ -40,7 +40,7 @@ class Configurator
 
         if (
             substr($key, -2) === '::'
-            && class_exists(substr($key, 0. - 2))
+            && class_exists(substr($key, 0, - 2))
         ) {
             $container->set($key, array_combine(array_keys($value), array_map(function ($v) {
                 if (is_scalar($v) || is_resource($v)) {

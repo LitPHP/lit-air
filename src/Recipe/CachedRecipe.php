@@ -8,20 +8,19 @@ class CachedRecipe implements RecipeInterface
     /**
      * @var callable
      */
-    protected $factory;
+    protected $builder;
 
     /**
-     * MultitonStub constructor.
-     * @param callable $factory
+     * @param callable $builder
      */
-    public function __construct(callable $factory)
+    public function __construct(callable $builder)
     {
-        $this->factory = $factory;
+        $this->builder = $builder;
     }
 
     public function resolve(WritableContainerInterface $container, ?string $id = null)
     {
-        $value = Factory::of($container)->invoke($this->factory);
+        $value = Factory::of($container)->invoke($this->builder);
         if (!is_null($id)) {
             $container->set($id, $value);
         }

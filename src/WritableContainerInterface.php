@@ -6,8 +6,6 @@ use Psr\Container\ContainerInterface;
 
 interface WritableContainerInterface extends ContainerInterface
 {
-    const KEY_FACTORY = Factory::class;
-
     /**
      * @inheritdoc
      */

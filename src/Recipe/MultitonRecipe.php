@@ -8,19 +8,19 @@ class MultitonRecipe implements RecipeInterface
     /**
      * @var callable
      */
-    protected $factory;
+    protected $builder;
 
     /**
      * MultitonStub constructor.
-     * @param callable $factory
+     * @param callable $builder
      */
-    public function __construct(callable $factory)
+    public function __construct(callable $builder)
     {
-        $this->factory = $factory;
+        $this->builder = $builder;
     }
 
     public function resolve(WritableContainerInterface $container, ?string $id = null)
     {
-        return Factory::of($container)->invoke($this->factory);
+        return Factory::of($container)->invoke($this->builder);
     }
 }

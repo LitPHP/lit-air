@@ -10,24 +10,24 @@ class SingletonRecipe implements RecipeInterface
     /**
      * @var callable
      */
-    protected $factory;
+    protected $builder;
 
     /**
      * MultitonStub constructor.
-     * @param callable $factory
+     * @param callable $builder
      */
-    public function __construct(callable $factory)
+    public function __construct(callable $builder)
     {
-        $this->factory = $factory;
+        $this->builder = $builder;
 
-        if (is_array($factory)) {
+        if (is_array($builder)) {
             $hash = implode('::', [
-                is_string($factory[0]) ? $factory[0] : spl_object_hash($factory[0]),
-                $factory[1],
+                is_string($builder[0]) ? $builder[0] : spl_object_hash($builder[0]),
+                $builder[1],
             ]);
-        } elseif (is_object($factory)) {
+        } elseif (is_object($builder)) {
             /** @noinspection PhpParamsInspection */
-            $hash = spl_object_hash($factory);
+            $hash = spl_object_hash($builder);
         } else {
             throw new \InvalidArgumentException();
         }
@@ -41,7 +41,7 @@ class SingletonRecipe implements RecipeInterface
             return self::$cache[$this->hash];
         }
 
-        $value = Factory::of($container)->invoke($this->factory);
+        $value = Factory::of($container)->invoke($this->builder);
         self::$cache[$this->hash] = $value;
 
         return $value;

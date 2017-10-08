@@ -2,6 +2,7 @@
 
 use Lit\Air\Configurator;
 use Lit\Air\Factory;
+use Lit\Air\Injection\InjectorInterface;
 use Lit\Air\Recipe\AliasRecipe;
 use Lit\Air\Recipe\AutowireRecipe;
 use Lit\Air\Recipe\CachedRecipe;
@@ -14,11 +15,14 @@ use Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface, WritableContainerInterface
 {
+    const KEY_FACTORY = Factory::class;
+    const KEY_INJECTORS = InjectorInterface::class;
     /**
      * @var RecipeInterface[]
      */
     protected $recipe = [];
     protected $cache = [];
+
     /**
      * @var ContainerInterface
      */
@@ -31,14 +35,14 @@ class Container implements ContainerInterface, WritableContainerInterface
         }
     }
 
-    public static function alias(string $alias, array $extra = [])
+    public static function alias(string $alias)
     {
-        return new AliasRecipe($alias, $extra);
+        return new AliasRecipe($alias);
     }
 
-    public static function autowire(array $extra = [], ?string $className = null)
+    public static function autowire(?string $className = null, array $extra = [])
     {
-        return new AutowireRecipe($extra, $className);
+        return new AutowireRecipe($className, $extra);
     }
 
     public static function cached(callable $factory)
@@ -78,7 +82,7 @@ class Container implements ContainerInterface, WritableContainerInterface
         }
 
         if ($id === static::KEY_FACTORY) {
-            return new Factory($this);
+            return $this->cache[$id] = new Factory($this);
         }
 
         if ($this->delegateContainer && $this->delegateContainer->has($id)) {
@@ -111,9 +115,25 @@ class Container implements ContainerInterface, WritableContainerInterface
         return null;
     }
 
+    public function hasCacheEntry($id)
+    {
+        return array_key_exists($id, $this->cache);
+    }
+
     public function flush($id): self
     {
         unset($this->cache[$id]);
+        return $this;
+    }
+
+    public function addInjector(InjectorInterface $injector)
+    {
+        if(!isset($this->cache[static::KEY_INJECTORS])) {
+            $this->cache[static::KEY_INJECTORS] = [$injector];
+        } else {
+            $this->cache[static::KEY_INJECTORS][] = $injector;
+        }
+
         return $this;
     }
 

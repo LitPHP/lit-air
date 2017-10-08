@@ -1,5 +1,6 @@
 <?php namespace Lit\Air;
 
+use Lit\Air\Injection\InjectorInterface;
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
 use Psr\Container\ContainerInterface;
@@ -45,6 +46,7 @@ class Factory
             : [];
 
         $instance = $class->newInstanceArgs($constructParams);
+        $this->inject($instance, $extraParameters);
 
         return $instance;
     }
@@ -75,7 +77,7 @@ class Factory
      */
     public function produce($className, $extraParameters = [])
     {
-        if ($this->container->has($className)) {
+        if ($this->container->hasCacheEntry($className)) {
             return $this->container->get($className);
         }
 
@@ -90,6 +92,52 @@ class Factory
         return $instance;
     }
 
+    public function inject($obj, array $extra = [])
+    {
+        if (!$this->container->has(Container::KEY_INJECTORS)) {
+            return;
+        }
+        foreach ($this->container->get(Container::KEY_INJECTORS) as $injector) {
+            /**
+             * @var InjectorInterface $injector
+             */
+            if ($injector->isTarget($obj)) {
+                $injector->inject($this, $obj, $extra);
+            }
+        }
+    }
+
+    public function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
+    {
+        do {
+            if (!empty($extra)) {
+                foreach ($keys as $key) {
+                    if (isset($extra[$key])) {
+                        return $this->container->resolveRecipe($extra[$key]);
+                    }
+                }
+            }
+
+            if ($className && $this->container->has("$className::")) {
+                $params = $this->container->get("$className::");
+                foreach ($keys as $key) {
+                    if (isset($params[$key])) {
+                        return $this->container->resolveRecipe($params[$key]);
+                    }
+                }
+            }
+        } while ($className = get_parent_class($className));
+
+        if ($dependencyClassName && $this->container->has($dependencyClassName)) {
+            return $this->container->get($dependencyClassName);
+        }
+
+        if (isset($dependencyClassName) && class_exists($dependencyClassName)) {
+            return $this->produce($dependencyClassName);
+        }
+
+        throw new ContainerException('failed to produce dependency');
+    }
 
     protected function resolveParams(array $params, string $className, array $extra = [])
     {
@@ -141,37 +189,5 @@ class Factory
         $keys[] = $parameter->getPosition();
 
         return [$keys, $paramClassName];
-    }
-
-    protected function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
-    {
-        do {
-            if (!empty($extra)) {
-                foreach ($keys as $key) {
-                    if (isset($extra[$key])) {
-                        return $this->container->resolveRecipe($extra[$key]);
-                    }
-                }
-            }
-
-            if ($className && $this->container->has("$className::")) {
-                $params = $this->container->get("$className::");
-                foreach ($keys as $key) {
-                    if (isset($params[$key])) {
-                        return $this->container->resolveRecipe($params[$key]);
-                    }
-                }
-            }
-        } while ($className = get_parent_class($className));
-
-        if ($dependencyClassName && $this->container->has($dependencyClassName)) {
-            return $this->container->get($dependencyClassName);
-        }
-
-        if (isset($dependencyClassName) && class_exists($dependencyClassName)) {
-            return $this->produce($dependencyClassName);
-        }
-
-        throw new ContainerException('failed to produce dependency');
     }
 }
