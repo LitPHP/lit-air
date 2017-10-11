@@ -26,7 +26,7 @@ class Configurator
     public static function configString(Container $container, string $config, bool $force = true)
     {
         if ($config[0] === '{') {
-            self::config($container, json_decode($config), $force);
+            self::config($container, json_decode($config, true), $force);
         } else {
             self::config($container, Yaml::parse($config), $force);
         }
@@ -47,8 +47,8 @@ class Configurator
             return Container::singleton($value);
         }
 
-        if ($value instanceof \stdClass && isset($value->{0})) {
-            return self::convertRecipeObject($value);
+        if (is_array($value) && array_key_exists(0,$value) && isset($value['$'])) {
+            return self::makeRecipe($value);
         }
 
         return Container::value($value);
@@ -70,6 +70,7 @@ class Configurator
         }
 
         $recipe = self::convertToRecipe($value);
+
         if ($recipe instanceof FixedValueRecipe) {
             $container->set($key, $recipe->getValue());
         } else {
@@ -99,10 +100,10 @@ class Configurator
         return $result;
     }
 
-    protected static function convertRecipeObject(\stdClass $value): RecipeInterface
+    protected static function makeRecipe(array $value): RecipeInterface
     {
-        $value = (array) $value;
-        $type = array_shift($value);
+        $type = $value['$'];
+        unset($value['$']);
 
         if (array_key_exists($type, [
             'alias' => 1,
