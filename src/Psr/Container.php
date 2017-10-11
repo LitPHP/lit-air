@@ -5,7 +5,6 @@ use Lit\Air\Factory;
 use Lit\Air\Injection\InjectorInterface;
 use Lit\Air\Recipe\AliasRecipe;
 use Lit\Air\Recipe\AutowireRecipe;
-use Lit\Air\Recipe\CachedRecipe;
 use Lit\Air\Recipe\FixedValueRecipe;
 use Lit\Air\Recipe\InstanceRecipe;
 use Lit\Air\Recipe\MultitonRecipe;

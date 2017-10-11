@@ -37,7 +37,7 @@ class Configurator
         self::configString($container, file_get_contents($path), $force);
     }
 
-    public static function convertToRecipe($value)
+    public static function convertToRecipe($value): RecipeInterface
     {
         if (is_object($value) && $value instanceof RecipeInterface) {
             return $value;
@@ -48,38 +48,7 @@ class Configurator
         }
 
         if ($value instanceof \stdClass && isset($value->{0})) {
-            $value = (array)$value;
-            $type = array_shift($value);
-
-            if (array_key_exists($type, [
-                'alias' => 1,
-                'autowire' => 1,
-                'instance' => 1,
-                'multiton' => 1,
-                'singleton' => 1,
-                'value' => 1,
-            ])) {
-                $valueDecorator = $value['decorator'] ?? null;
-                unset($value['decorator']);
-
-                $recipe = call_user_func_array([Container::class, $type], $value);
-
-                if ($valueDecorator) {
-                    foreach ($valueDecorator as $name => $option) {
-                        if (!isset(self::$decorators[$name])) {
-                            throw new ContainerException("cannot understand recipe decorator [$name]");
-                        }
-                        $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
-                        if (!empty($option)) {
-                            $recipe->setOption($option);
-                        }
-                    }
-                }
-
-                return $recipe;
-            }
-
-            throw new ContainerException("cannot understand given recipe");
+            return self::convertRecipeObject($value);
         }
 
         return Container::value($value);
@@ -96,9 +65,6 @@ class Configurator
             substr($key, -2) === '::'
             && class_exists(substr($key, 0, -2))
         ) {
-            if (!is_array($value)) {
-                throw new ContainerException('CLASSNAME:: entry must be array');
-            }
             $container->set($key, self::convertArray($value));
             return;
         }
@@ -131,5 +97,41 @@ class Configurator
         }
 
         return $result;
+    }
+
+    protected static function convertRecipeObject(\stdClass $value): RecipeInterface
+    {
+        $value = (array) $value;
+        $type = array_shift($value);
+
+        if (array_key_exists($type, [
+            'alias' => 1,
+            'autowire' => 1,
+            'instance' => 1,
+            'multiton' => 1,
+            'singleton' => 1,
+            'value' => 1,
+        ])) {
+            $valueDecorator = $value['decorator'] ?? null;
+            unset($value['decorator']);
+
+            $recipe = call_user_func_array([Container::class, $type], $value);
+
+            if ($valueDecorator) {
+                foreach ($valueDecorator as $name => $option) {
+                    if (!isset(self::$decorators[$name])) {
+                        throw new ContainerException("cannot understand recipe decorator [$name]");
+                    }
+                    $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
+                    if (!empty($option)) {
+                        $recipe->setOption($option);
+                    }
+                }
+            }
+
+            return $recipe;
+        }
+
+        throw new ContainerException("cannot understand given recipe");
     }
 }

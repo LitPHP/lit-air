@@ -111,20 +111,9 @@ class Factory
 
     public function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
     {
-        $currentClassName = $className;
-        do {
-            if (!empty($extra) && ($value = $this->findFromArray($extra, $keys))) {
-                return $value->getValue();
-            }
-
-            if (
-                $currentClassName
-                && $this->container->has("$currentClassName::")
-                && ($value = $this->findFromArray($this->container->get("$currentClassName::"), $keys))
-            ) {
-                return $value->getValue();
-            }
-        } while ($currentClassName = get_parent_class($currentClassName));
+        if ($value = $this->produceFromClass($className, $keys, $extra)) {
+            return $value[0];
+        }
 
         if ($dependencyClassName && $this->container->has($dependencyClassName)) {
             return $this->container->get($dependencyClassName);
@@ -137,11 +126,31 @@ class Factory
         throw new ContainerException('failed to produce dependency');
     }
 
+    protected function produceFromClass($className, array $keys, array $extra = [])
+    {
+        $currentClassName = $className;
+        do {
+            if (!empty($extra) && ($value = $this->findFromArray($extra, $keys))) {
+                return $value;
+            }
+
+            if (
+                $currentClassName
+                && $this->container->has("$currentClassName::")
+                && ($value = $this->findFromArray($this->container->get("$currentClassName::"), $keys))
+            ) {
+                return $value;
+            }
+        } while ($currentClassName = get_parent_class($currentClassName));
+
+        return null;
+    }
+
     protected function findFromArray($arr, $keys)
     {
         foreach ($keys as $key) {
             if (array_key_exists($key, $arr)) {
-                return Container::value($this->container->resolveRecipe($arr[$key]));
+                return [$this->container->resolveRecipe($arr[$key])];
             }
         }
 
