@@ -55,11 +55,8 @@ class SetterInjector implements InjectorInterface
             return false;
         }
         $parameter = $method->getParameters();
-        if (count($parameter) !== 1) {
-            return false;
-        }
-        $parameter = $parameter[0];
-        if ($parameter->isOptional() || $parameter->allowsNull()) {
+        if (count($parameter) !== 1 || $parameter[0]->isOptional()
+        ) {
             return false;
         }
 

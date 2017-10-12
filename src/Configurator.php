@@ -47,7 +47,7 @@ class Configurator
             return Container::singleton($value);
         }
 
-        if (is_array($value) && array_key_exists(0,$value) && isset($value['$'])) {
+        if (is_array($value) && array_key_exists(0, $value) && isset($value['$'])) {
             return self::makeRecipe($value);
         }
 
