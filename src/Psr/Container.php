@@ -115,24 +115,14 @@ class Container implements ContainerInterface, WritableContainerInterface
         return null;
     }
 
-    public function decorateRecipe(string $id, $decorator)
+    public function extendRecipe(string $id, callable $wrapper)
     {
         if (!array_key_exists($id, $this->recipe)) {
             throw new \InvalidArgumentException("recipe [$id] unexists");
         }
 
-        if (is_callable([$decorator, 'decorate'])) {
-            $doDecorate = [$decorator, 'decorate'];
-        } elseif (is_callable($decorator)) {
-            $doDecorate = $decorator;
-        } else {
-            throw new \InvalidArgumentException("illegal decorator");
-        }
+        $recipe = self::applyRecipeWrapper($wrapper, $this->recipe[$id]);
 
-        $recipe = call_user_func($doDecorate, $this->recipe[$id]);
-        if (!$recipe instanceof RecipeInterface) {
-            throw new \LogicException("illegal decorator return value");
-        }
         $this->recipe[$id] = $recipe;
 
         return $this;
@@ -190,5 +180,17 @@ class Container implements ContainerInterface, WritableContainerInterface
     public function __isset($name)
     {
         return $this->has($name);
+    }
+
+    /**
+     * @param callable $wrapper
+     * @param RecipeInterface $recipe
+     * @return RecipeInterface
+     */
+    protected static function applyRecipeWrapper(callable $wrapper, RecipeInterface $recipe): RecipeInterface
+    {
+        $recipe = $wrapper($recipe);
+
+        return $recipe;
     }
 }

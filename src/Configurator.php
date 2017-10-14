@@ -2,6 +2,7 @@
 
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
+use Lit\Air\Recipe\Decorator\AbstractRecipeDecorator;
 use Lit\Air\Recipe\Decorator\CacheDecorator;
 use Lit\Air\Recipe\Decorator\CallbackDecorator;
 use Lit\Air\Recipe\FixedValueRecipe;
@@ -118,26 +119,44 @@ class Configurator
             $valueDecorator = $value['decorator'] ?? null;
             unset($value['decorator']);
 
+            /**
+             * @var RecipeInterface $recipe
+             */
             $recipe = call_user_func_array([Container::class, $type], $value);
 
             if ($valueDecorator) {
-                foreach ($valueDecorator as $name => $option) {
-                    if (isset(self::$decorators[$name])) {
-                        $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
-                        if (!empty($option)) {
-                            $recipe->setOption($option);
-                        }
-                    } elseif (is_callable([$option, 'decorate'])) {
-                        $recipe = call_user_func([$option, 'decorate'], $recipe);
-                    } else {
-                        throw new ContainerException("cannot understand recipe decorator [$name]");
-                    }
-                }
+                $recipe = self::applyRecipeDecorators($valueDecorator, $recipe);
             }
 
             return $recipe;
         }
 
         throw new ContainerException("cannot understand given recipe");
+    }
+
+    /**
+     * @param array $decorators
+     * @param RecipeInterface $recipe
+     * @return RecipeInterface
+     */
+    protected static function applyRecipeDecorators(array $decorators, RecipeInterface $recipe): RecipeInterface
+    {
+        foreach ($decorators as $name => $option) {
+            if (isset(self::$decorators[$name])) {
+                $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
+                if (!empty($option)) {
+                    $recipe->setOption($option);
+                }
+            } elseif (is_subclass_of($name, AbstractRecipeDecorator::class)) {
+                $recipe = call_user_func([$option, 'decorate'], $recipe);
+                if (!empty($option)) {
+                    $recipe->setOption($option);
+                }
+            } else {
+                throw new ContainerException("cannot understand recipe decorator [$name]");
+            }
+        }
+
+        return $recipe;
     }
 }
