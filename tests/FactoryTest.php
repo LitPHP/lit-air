@@ -3,6 +3,7 @@
 namespace Lit\Air\Tests;
 
 use Lit\Air\Factory;
+use Lit\Air\Psr\CircularDependencyException;
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
 use Psr\Container\ContainerInterface;
@@ -114,6 +115,31 @@ class FactoryTest extends AbstractTestCase
             'qux' => 9,
             'ng' => $uniqid,
         ], get_object_vars($foo));
+    }
+
+    public function testCircularDependency()
+    {
+        self::assertEquals(2, 1 + 1);
+        try {
+            $this->container->define(\ArrayObject::class, Container::multiton([$this, '_circularFoo']))
+                ->define(Foo::class, Container::autowire(null, [
+                    'bar' => Container::multiton(function (\ArrayObject $object) {
+                        return get_class($object);
+                    }),
+                ]));
+            $this->container->get(Foo::class);
+
+            self::fail('should not success');
+        } catch (CircularDependencyException $exception) {
+            $stack = $exception->getStack();
+            $this->assertInternalType('array', $stack);
+        }
+    }
+
+    public function _circularFoo(Foo $foo)
+    {
+        $this->assertInstanceOf(Foo::class, $foo);
+        return new \ArrayObject([1, 2, 3]);
     }
 
     protected function setUp()

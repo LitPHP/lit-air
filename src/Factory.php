@@ -1,6 +1,7 @@
 <?php namespace Lit\Air;
 
 use Lit\Air\Injection\InjectorInterface;
+use Lit\Air\Psr\CircularDependencyException;
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
 use Psr\Container\ContainerInterface;
@@ -11,6 +12,10 @@ class Factory
      * @var Container
      */
     protected $container;
+    /**
+     * @var array
+     */
+    protected $circularStore = [];
 
     public function __construct(ContainerInterface $container = null)
     {
@@ -61,15 +66,26 @@ class Factory
     public function invoke(callable $callback, array $extra = [])
     {
         if (is_string($callback) || $callback instanceof \Closure) {
-            $params = (new \ReflectionFunction($callback))->getParameters();
+            $method = new \ReflectionFunction($callback);
+            $params = $method->getParameters();
         } else {
             if (is_object($callback)) {
                 $callback = [$callback, '__invoke'];
             }
-            $params = (new \ReflectionClass($callback[0]))->getMethod($callback[1])->getParameters();
+            $method = (new \ReflectionClass($callback[0]))->getMethod($callback[1]);
+            $params = $method->getParameters();
         }
 
-        return call_user_func_array($callback, $this->resolveParams($params, '', $extra));
+        if ($method->isClosure()) {
+            $name = sprintf('Closure@%s:%d', $method->getFileName(), $method->getStartLine());
+        } elseif ($method instanceof \ReflectionMethod) {
+            $name = sprintf('Method@%s::%s', $method->getDeclaringClass()->name, $method->name);
+        } else {
+            $name = (string) $method;
+            $name = substr($name, 0, strpos($name, "{\n"));
+        }
+
+        return call_user_func_array($callback, $this->resolveParams($params, '!' . $name, $extra));
     }
 
     /**
@@ -135,7 +151,7 @@ class Factory
             }
 
             if (
-                $currentClassName
+                class_exists($currentClassName)
                 && $this->container->has("$currentClassName::")
                 && ($value = $this->findFromArray($this->container->get("$currentClassName::"), $keys))
             ) {
@@ -169,10 +185,18 @@ class Factory
 
     protected function resolveParam($className, \ReflectionParameter $parameter, array $extraParameters)
     {
-        list($keys, $paramClassName) = $this->parseParameter($parameter);
+        $hash = sprintf('%s#%d', $className, $parameter->getPosition());
+        if (isset($this->circularStore[$hash])) {
+            throw new CircularDependencyException(array_keys($this->circularStore));
+        }
 
         try {
+            $this->circularStore[$hash] = true;
+            list($keys, $paramClassName) = $this->parseParameter($parameter);
+
             return $this->produceDependency($className, $keys, $paramClassName, $extraParameters);
+        } catch (CircularDependencyException $e) {
+            throw $e;
         } catch (ContainerException $e) {
             if ($parameter->isOptional()) {
                 return $parameter->getDefaultValue();
@@ -183,6 +207,8 @@ class Factory
                 0,
                 $e
             );
+        } finally {
+            unset($this->circularStore[$hash]);
         }
     }
 
