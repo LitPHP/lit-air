@@ -2,7 +2,8 @@
 
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
-use Lit\Air\Recipe\CacheDecoratorRecipe;
+use Lit\Air\Recipe\Decorator\CacheDecorator;
+use Lit\Air\Recipe\Decorator\CallbackDecorator;
 use Lit\Air\Recipe\FixedValueRecipe;
 use Lit\Air\Recipe\RecipeInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -10,7 +11,8 @@ use Symfony\Component\Yaml\Yaml;
 class Configurator
 {
     protected static $decorators = [
-        'cache' => CacheDecoratorRecipe::class
+        'cache' => CacheDecorator::class,
+        'callback' => CallbackDecorator::class
     ];
 
     public static function config(Container $container, array $config, bool $force = true)
@@ -120,12 +122,15 @@ class Configurator
 
             if ($valueDecorator) {
                 foreach ($valueDecorator as $name => $option) {
-                    if (!isset(self::$decorators[$name])) {
+                    if (isset(self::$decorators[$name])) {
+                        $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
+                        if (!empty($option)) {
+                            $recipe->setOption($option);
+                        }
+                    } elseif (is_callable([$option, 'decorate'])) {
+                        $recipe = call_user_func([$option, 'decorate'], $recipe);
+                    } else {
                         throw new ContainerException("cannot understand recipe decorator [$name]");
-                    }
-                    $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
-                    if (!empty($option)) {
-                        $recipe->setOption($option);
                     }
                 }
             }

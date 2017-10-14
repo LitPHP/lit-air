@@ -1,8 +1,8 @@
-<?php namespace Lit\Air\Recipe;
+<?php namespace Lit\Air\Recipe\Decorator;
 
 use Lit\Air\WritableContainerInterface;
 
-class CacheDecoratorRecipe extends AbstractRecipeDecoratorRecipe
+class CacheDecorator extends AbstractRecipeDecorator
 {
     public function resolve(WritableContainerInterface $container, ?string $id = null)
     {

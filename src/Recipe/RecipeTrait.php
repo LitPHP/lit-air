@@ -1,5 +1,7 @@
 <?php namespace Lit\Air\Recipe;
 
+use Lit\Air\Recipe\Decorator\CacheDecorator;
+
 trait RecipeTrait
 {
     public function cached()
@@ -7,7 +9,7 @@ trait RecipeTrait
         /**
          * @var RecipeInterface $this
          */
-        return CacheDecoratorRecipe::decorate($this);
+        return CacheDecorator::decorate($this);
     }
 
 }

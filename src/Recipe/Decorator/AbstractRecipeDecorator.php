@@ -1,6 +1,9 @@
-<?php namespace Lit\Air\Recipe;
+<?php namespace Lit\Air\Recipe\Decorator;
 
-abstract class AbstractRecipeDecoratorRecipe implements RecipeInterface
+use Lit\Air\Recipe\RecipeInterface;
+use Lit\Air\Recipe\RecipeTrait;
+
+abstract class AbstractRecipeDecorator implements RecipeInterface
 {
     use RecipeTrait;
     /**
@@ -21,7 +24,7 @@ abstract class AbstractRecipeDecoratorRecipe implements RecipeInterface
 
     /**
      * @param mixed $option
-     * @return AbstractRecipeDecoratorRecipe
+     * @return AbstractRecipeDecorator
      */
     public function setOption($option)
     {

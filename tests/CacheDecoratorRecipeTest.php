@@ -3,8 +3,8 @@
 namespace Lit\Air\Tests;
 
 use Lit\Air\Psr\Container;
-use Lit\Air\Recipe\CacheDecoratorRecipe;
 use Lit\Air\Recipe\CachedRecipe;
+use Lit\Air\Recipe\Decorator\CacheDecorator;
 
 class CacheDecoratorRecipeTest extends AbstractTestCase
 {
@@ -21,7 +21,7 @@ class CacheDecoratorRecipeTest extends AbstractTestCase
         };
         $stub = Container::multiton($factory)->cached();
 
-        self::assertTrue($stub instanceof CacheDecoratorRecipe);
+        self::assertTrue($stub instanceof CacheDecorator);
 
         $this->container->define($key, $stub);
         $this->container->define($key2, $stub);
