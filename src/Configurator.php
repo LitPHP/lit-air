@@ -144,16 +144,14 @@ class Configurator
         foreach ($decorators as $name => $option) {
             if (isset(self::$decorators[$name])) {
                 $recipe = call_user_func([self::$decorators[$name], 'decorate'], $recipe);
-                if (!empty($option)) {
-                    $recipe->setOption($option);
-                }
             } elseif (is_subclass_of($name, AbstractRecipeDecorator::class)) {
                 $recipe = call_user_func([$option, 'decorate'], $recipe);
-                if (!empty($option)) {
-                    $recipe->setOption($option);
-                }
             } else {
                 throw new ContainerException("cannot understand recipe decorator [$name]");
+            }
+
+            if (!empty($option)) {
+                $recipe->setOption($option);
             }
         }
 
