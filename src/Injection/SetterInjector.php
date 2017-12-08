@@ -8,6 +8,15 @@ class SetterInjector implements InjectorInterface
 {
     protected $prefixes = ['inject'];
 
+    /**
+     * SetterInjector constructor.
+     * @param array|string[] $prefixes
+     */
+    public function __construct(array $prefixes)
+    {
+        $this->prefixes = $prefixes;
+    }
+
     public function inject(Factory $factory, $obj, array $extra = [])
     {
         $class = new \ReflectionClass($obj);
