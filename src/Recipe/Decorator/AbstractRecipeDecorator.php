@@ -21,7 +21,7 @@ abstract class AbstractRecipeDecorator implements RecipeInterface
         $this->recipe = $recipe;
     }
 
-    public static function decorate(RecipeInterface $recipe)
+    public static function decorate(RecipeInterface $recipe): self
     {
         return new static($recipe);
     }
@@ -30,7 +30,7 @@ abstract class AbstractRecipeDecorator implements RecipeInterface
      * @param mixed $option
      * @return AbstractRecipeDecorator
      */
-    public function setOption($option)
+    public function setOption($option): self
     {
         $this->option = $option;
         return $this;

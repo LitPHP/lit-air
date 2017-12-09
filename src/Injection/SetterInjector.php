@@ -21,7 +21,7 @@ class SetterInjector implements InjectorInterface
         $this->prefixes = $prefixes;
     }
 
-    public function inject(Factory $factory, $obj, array $extra = [])
+    public function inject(Factory $factory, $obj, array $extra = []): void
     {
         $class = new \ReflectionClass($obj);
         foreach ($class->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
@@ -45,7 +45,7 @@ class SetterInjector implements InjectorInterface
         }
     }
 
-    public function isTarget($obj)
+    public function isTarget($obj): bool
     {
         $class = get_class($obj);
         return defined("$class::SETTER_INJECTOR") && $class::SETTER_INJECTOR === static::class;
@@ -56,7 +56,7 @@ class SetterInjector implements InjectorInterface
      * @param array $prefixes
      * @return $this
      */
-    public function setPrefixes(array $prefixes)
+    public function setPrefixes(array $prefixes): self
     {
         $this->prefixes = $prefixes;
         return $this;

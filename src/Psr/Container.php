@@ -39,38 +39,38 @@ class Container implements ContainerInterface, WritableContainerInterface
         }
     }
 
-    public static function alias(string $alias)
+    public static function alias(string $alias): RecipeInterface
     {
         return new AliasRecipe($alias);
     }
 
-    public static function autowire(?string $className = null, array $extra = [])
+    public static function autowire(?string $className = null, array $extra = []): RecipeInterface
     {
         return new AutowireRecipe($className, $extra);
     }
 
-    public static function instance(?string $className = null, array $extra = [])
+    public static function instance(?string $className = null, array $extra = []): RecipeInterface
     {
         return new InstanceRecipe($className, $extra);
     }
 
-    public static function multiton(callable $builder)
+    public static function multiton(callable $builder): RecipeInterface
     {
         return new MultitonRecipe($builder);
     }
 
 
-    public static function singleton(callable $builder)
+    public static function singleton(callable $builder): RecipeInterface
     {
         return new SingletonRecipe($builder);
     }
 
-    public static function value($value)
+    public static function value($value): RecipeInterface
     {
         return new FixedValueRecipe($value);
     }
 
-    public static function wrap(ContainerInterface $container)
+    public static function wrap(ContainerInterface $container): self
     {
         return (new static)->setDelegateContainer($container);
     }
@@ -119,7 +119,7 @@ class Container implements ContainerInterface, WritableContainerInterface
         return null;
     }
 
-    public function extendRecipe(string $id, callable $wrapper)
+    public function extendRecipe(string $id, callable $wrapper): self
     {
         if (!array_key_exists($id, $this->recipe)) {
             throw new \InvalidArgumentException("recipe [$id] unexists");
@@ -132,7 +132,7 @@ class Container implements ContainerInterface, WritableContainerInterface
         return $this;
     }
 
-    public function hasCacheEntry(string $id)
+    public function hasCacheEntry(string $id): bool
     {
         return array_key_exists($id, $this->cache);
     }
@@ -143,7 +143,7 @@ class Container implements ContainerInterface, WritableContainerInterface
         return $this;
     }
 
-    public function addInjector(InjectorInterface $injector)
+    public function addInjector(InjectorInterface $injector): self
     {
         if (!isset($this->cache[static::KEY_INJECTORS])) {
             $this->cache[static::KEY_INJECTORS] = [$injector];

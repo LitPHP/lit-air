@@ -22,7 +22,7 @@ abstract class AbstractTestCase extends TestCase
      */
     protected static function randKey(): string
     {
-        return md5(rand());
+        return md5(uniqid());
     }
 
     protected function setUp()

@@ -20,7 +20,7 @@ class Configurator
         'callback' => CallbackDecorator::class
     ];
 
-    public static function config(Container $container, array $config, bool $force = true)
+    public static function config(Container $container, array $config, bool $force = true): void
     {
         foreach ($config as $key => $value) {
             if (!$force && $container->has($key)) {
@@ -30,7 +30,7 @@ class Configurator
         }
     }
 
-    public static function configString(Container $container, string $config, bool $force = true)
+    public static function configString(Container $container, string $config, bool $force = true): void
     {
         if ($config[0] === '{') {
             self::config($container, json_decode($config, true), $force);
@@ -39,7 +39,7 @@ class Configurator
         }
     }
 
-    public static function configFile(Container $container, string $path, bool $force = true)
+    public static function configFile(Container $container, string $path, bool $force = true): void
     {
         self::configString($container, file_get_contents($path), $force);
     }

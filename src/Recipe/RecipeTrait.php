@@ -8,7 +8,7 @@ use Lit\Air\Recipe\Decorator\CacheDecorator;
 
 trait RecipeTrait
 {
-    public function cached()
+    public function cached(): RecipeInterface
     {
         /**
          * @var RecipeInterface $this

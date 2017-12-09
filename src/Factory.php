@@ -114,7 +114,7 @@ class Factory
         return $instance;
     }
 
-    public function inject($obj, array $extra = [])
+    public function inject($obj, array $extra = []): void
     {
         if (!$this->container->has(Container::KEY_INJECTORS)) {
             return;
