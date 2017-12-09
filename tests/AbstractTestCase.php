@@ -1,4 +1,8 @@
-<?php namespace Lit\Air\Tests;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air\Tests;
 
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\NotFoundException;

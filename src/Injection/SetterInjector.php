@@ -1,4 +1,8 @@
-<?php namespace Lit\Air\Injection;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air\Injection;
 
 use Lit\Air\Factory;
 use Lit\Air\Psr\ContainerException;

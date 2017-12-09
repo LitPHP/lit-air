@@ -1,4 +1,8 @@
-<?php namespace Lit\Air\Psr;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air\Psr;
 
 use Lit\Air\Configurator;
 use Lit\Air\Factory;

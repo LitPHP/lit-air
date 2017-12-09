@@ -1,4 +1,8 @@
-<?php namespace Lit\Air\Recipe\Decorator;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air\Recipe\Decorator;
 
 use Lit\Air\WritableContainerInterface;
 

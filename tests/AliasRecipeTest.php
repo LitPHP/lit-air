@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lit\Air\Tests;
 
 use Lit\Air\Factory;

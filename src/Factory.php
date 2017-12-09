@@ -1,4 +1,8 @@
-<?php namespace Lit\Air;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air;
 
 use Lit\Air\Injection\InjectorInterface;
 use Lit\Air\Psr\CircularDependencyException;

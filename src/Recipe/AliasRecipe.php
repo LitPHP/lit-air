@@ -1,4 +1,8 @@
-<?php namespace Lit\Air\Recipe;
+<?php
+
+declare(strict_types=1);
+
+namespace Lit\Air\Recipe;
 
 use Lit\Air\WritableContainerInterface;
 
