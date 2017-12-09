@@ -28,9 +28,6 @@
   "require-dev": {
     "phpunit/phpunit": "^6.4"
   },
-  "suggest": {
-    "symfony/yaml": "parse YAML configuration"
-  },
   "scripts": {
     "test": "phpunit -c ."
   },

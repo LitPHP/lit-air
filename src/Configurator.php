@@ -11,7 +11,6 @@ use Lit\Air\Recipe\Decorator\CacheDecorator;
 use Lit\Air\Recipe\Decorator\CallbackDecorator;
 use Lit\Air\Recipe\FixedValueRecipe;
 use Lit\Air\Recipe\RecipeInterface;
-use Symfony\Component\Yaml\Yaml;
 
 class Configurator
 {
@@ -28,20 +27,6 @@ class Configurator
             }
             self::write($container, $key, $value);
         }
-    }
-
-    public static function configString(Container $container, string $config, bool $force = true): void
-    {
-        if ($config[0] === '{') {
-            self::config($container, json_decode($config, true), $force);
-        } else {
-            self::config($container, Yaml::parse($config), $force);
-        }
-    }
-
-    public static function configFile(Container $container, string $path, bool $force = true): void
-    {
-        self::configString($container, file_get_contents($path), $force);
     }
 
     public static function convertToRecipe($value): RecipeInterface
