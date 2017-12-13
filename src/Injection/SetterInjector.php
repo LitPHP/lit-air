@@ -16,7 +16,7 @@ class SetterInjector implements InjectorInterface
      * SetterInjector constructor.
      * @param array|string[] $prefixes
      */
-    public function __construct(array $prefixes)
+    public function __construct(array $prefixes = ['inject'])
     {
         $this->prefixes = $prefixes;
     }
