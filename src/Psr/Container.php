@@ -75,6 +75,11 @@ class Container implements ContainerInterface, WritableContainerInterface
         return (new static)->setDelegateContainer($container);
     }
 
+    /**
+     * @param string $id
+     * @return mixed
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     public function get($id)
     {
         if (array_key_exists($id, $this->cache)) {
@@ -176,6 +181,11 @@ class Container implements ContainerInterface, WritableContainerInterface
         return $this;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     public function __get($name)
     {
         return $this->get($name);
