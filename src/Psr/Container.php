@@ -54,15 +54,15 @@ class Container implements ContainerInterface, WritableContainerInterface
         return new InstanceRecipe($className, $extra);
     }
 
-    public static function multiton(callable $builder): RecipeInterface
+    public static function multiton(callable $builder, array $extra = []): RecipeInterface
     {
-        return new MultitonRecipe($builder);
+        return new MultitonRecipe($builder, $extra);
     }
 
 
-    public static function singleton(callable $builder): RecipeInterface
+    public static function singleton(callable $builder, array $extra = []): RecipeInterface
     {
-        return new SingletonRecipe($builder);
+        return new SingletonRecipe($builder, $extra);
     }
 
     public static function value($value): RecipeInterface
