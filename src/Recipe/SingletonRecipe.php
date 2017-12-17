@@ -15,12 +15,17 @@ class SingletonRecipe extends AbstractRecipe
      * @var callable
      */
     protected $builder;
+    /**
+     * @var array
+     */
+    protected $extra;
 
     /**
      * MultitonStub constructor.
      * @param callable $builder
+     * @param array $extra
      */
-    public function __construct(callable $builder)
+    public function __construct(callable $builder, array $extra = [])
     {
         $this->builder = $builder;
 
@@ -37,6 +42,7 @@ class SingletonRecipe extends AbstractRecipe
         }
 
         $this->hash = $hash;
+        $this->extra = $extra;
     }
 
     public function resolve(WritableContainerInterface $container, ?string $id = null)
@@ -45,7 +51,7 @@ class SingletonRecipe extends AbstractRecipe
             return self::$cache[$this->hash];
         }
 
-        $value = Factory::of($container)->invoke($this->builder);
+        $value = Factory::of($container)->invoke($this->builder, $this->extra);
         self::$cache[$this->hash] = $value;
 
         return $value;
