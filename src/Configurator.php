@@ -9,6 +9,7 @@ use Lit\Air\Psr\ContainerException;
 use Lit\Air\Recipe\Decorator\AbstractRecipeDecorator;
 use Lit\Air\Recipe\Decorator\CacheDecorator;
 use Lit\Air\Recipe\Decorator\CallbackDecorator;
+use Lit\Air\Recipe\Decorator\SingletonDecorator;
 use Lit\Air\Recipe\FixedValueRecipe;
 use Lit\Air\Recipe\RecipeInterface;
 
@@ -16,7 +17,8 @@ class Configurator
 {
     protected static $decorators = [
         'cache' => CacheDecorator::class,
-        'callback' => CallbackDecorator::class
+        'callback' => CallbackDecorator::class,
+        'singleton' => SingletonDecorator::class,
     ];
 
     public static function config(Container $container, array $config, bool $force = true): void
