@@ -116,7 +116,7 @@ class Configurator
             $recipe = call_user_func_array([Container::class, $type], $value);
 
             if ($valueDecorator) {
-                $recipe = self::applyRecipeDecorators($valueDecorator, $recipe);
+                $recipe = self::wrapRecipeWithDecorators($valueDecorator, $recipe);
             }
 
             return $recipe;
@@ -130,7 +130,7 @@ class Configurator
      * @param RecipeInterface $recipe
      * @return RecipeInterface
      */
-    protected static function applyRecipeDecorators(array $decorators, RecipeInterface $recipe): RecipeInterface
+    public static function wrapRecipeWithDecorators(array $decorators, RecipeInterface $recipe): RecipeInterface
     {
         foreach ($decorators as $name => $option) {
             if (isset(self::$decorators[$name])) {
