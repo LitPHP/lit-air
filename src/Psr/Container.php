@@ -21,6 +21,7 @@ class Container implements ContainerInterface, WritableContainerInterface
 {
     const KEY_FACTORY = Factory::class;
     const KEY_INJECTORS = InjectorInterface::class;
+    const CONFIGURATOR_CLASS = Configurator::class;
     /**
      * @var RecipeInterface[]
      */
@@ -35,7 +36,11 @@ class Container implements ContainerInterface, WritableContainerInterface
     public function __construct(?array $config = null)
     {
         if ($config) {
-            Configurator::config($this, $config);
+            $class = static::CONFIGURATOR_CLASS;
+            /**
+             * @see Configurator::config()
+             */
+            $class::config($this, $config);
         }
     }
 
@@ -130,7 +135,7 @@ class Container implements ContainerInterface, WritableContainerInterface
             throw new \InvalidArgumentException("recipe [$id] unexists");
         }
 
-        $recipe = self::applyRecipeWrapper($wrapper, $this->recipe[$id]);
+        $recipe = static::applyRecipeWrapper($wrapper, $this->recipe[$id]);
 
         $this->recipe[$id] = $recipe;
 
@@ -161,7 +166,11 @@ class Container implements ContainerInterface, WritableContainerInterface
 
     public function resolveRecipe($value)
     {
-        return Configurator::convertToRecipe($value)->resolve($this);
+        $class = static::CONFIGURATOR_CLASS;
+        /**
+         * @see Configurator::convertArray()
+         */
+        return $class::convertToRecipe($value)->resolve($this);
     }
 
     public function set($id, $value): self
