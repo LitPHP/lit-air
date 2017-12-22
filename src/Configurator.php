@@ -48,6 +48,62 @@ class Configurator
         return Container::value($value);
     }
 
+    public static function singleton(string $classname, array $extra = []): array
+    {
+        return self::decorateSingleton(self::instance($classname, $extra));
+    }
+
+    public static function decorateSingleton(array $config):array
+    {
+        $config['decorator'] = $config['decorator'] ?? [];
+        $config['decorator']['singleton'] = true;
+
+        return $config;
+    }
+
+    public static function decorateCallback(array $config, callable $callback):array
+    {
+        $config['decorator'] = $config['decorator'] ?? [];
+        $config['decorator']['callback'] = $callback;
+
+        return $config;
+    }
+
+    public static function provideParameter(array $extra): array
+    {
+        return [
+            '$'=>'autowire',
+            null,
+            $extra,
+        ];
+    }
+
+    public static function produce(string $classname, array $extra = []): array
+    {
+        return [
+            '$' => 'autowire',
+            $classname,
+            $extra,
+        ];
+    }
+
+    public static function instance(string $classname, array $extra = []): array
+    {
+        return [
+            '$' => 'instance',
+            $classname,
+            $extra,
+        ];
+    }
+    
+    public static function alias(string $key): array
+    {
+        return [
+            '$' => 'alias',
+            $key,
+        ];
+    }
+
     protected static function write(Container $container, $key, $value)
     {
         if (is_scalar($value) || is_resource($value)) {

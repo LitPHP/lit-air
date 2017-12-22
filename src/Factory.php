@@ -97,7 +97,7 @@ class Factory
      * @param array $extraParameters
      * @return object of $className«
      */
-    public function produce($className, $extraParameters = [])
+    public function produce($className, array $extraParameters = [])
     {
         if ($this->container->hasCacheEntry($className)) {
             return $this->container->get($className);
