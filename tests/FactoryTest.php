@@ -123,9 +123,9 @@ class FactoryTest extends AbstractTestCase
     {
         self::assertEquals(2, 1 + 1);
         try {
-            $this->container->define(\ArrayObject::class, Container::multiton([$this, '_circularFoo']))
+            $this->container->define(\ArrayObject::class, Container::builder([$this, '_circularFoo']))
                 ->define(Foo::class, Container::autowire(null, [
-                    'bar' => Container::multiton(function (\ArrayObject $object) {
+                    'bar' => Container::builder(function (\ArrayObject $object) {
                         return get_class($object);
                     }),
                 ]));

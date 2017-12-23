@@ -7,7 +7,7 @@ namespace Lit\Air\Recipe;
 use Lit\Air\Factory;
 use Lit\Air\WritableContainerInterface;
 
-class MultitonRecipe extends AbstractRecipe
+class BuilderRecipe extends AbstractRecipe
 {
     /**
      * @var callable

@@ -9,11 +9,10 @@ use Lit\Air\Factory;
 use Lit\Air\Injection\InjectorInterface;
 use Lit\Air\Recipe\AliasRecipe;
 use Lit\Air\Recipe\AutowireRecipe;
+use Lit\Air\Recipe\BuilderRecipe;
 use Lit\Air\Recipe\FixedValueRecipe;
 use Lit\Air\Recipe\InstanceRecipe;
-use Lit\Air\Recipe\MultitonRecipe;
 use Lit\Air\Recipe\RecipeInterface;
-use Lit\Air\Recipe\SingletonRecipe;
 use Lit\Air\WritableContainerInterface;
 use Psr\Container\ContainerInterface;
 
@@ -39,6 +38,7 @@ class Container implements ContainerInterface, WritableContainerInterface
             $class = static::CONFIGURATOR_CLASS;
             /**
              * @see Configurator::config()
+             * @var Configurator $class
              */
             $class::config($this, $config);
         }
@@ -59,15 +59,9 @@ class Container implements ContainerInterface, WritableContainerInterface
         return new InstanceRecipe($className, $extra);
     }
 
-    public static function multiton(callable $builder, array $extra = []): RecipeInterface
+    public static function builder(callable $builder, array $extra = []): RecipeInterface
     {
-        return new MultitonRecipe($builder, $extra);
-    }
-
-
-    public static function singleton(callable $builder, array $extra = []): RecipeInterface
-    {
-        return new SingletonRecipe($builder, $extra);
+        return new BuilderRecipe($builder, $extra);
     }
 
     public static function value($value): RecipeInterface
@@ -169,6 +163,7 @@ class Container implements ContainerInterface, WritableContainerInterface
         $class = static::CONFIGURATOR_CLASS;
         /**
          * @see Configurator::convertArray()
+         * @var Configurator $class
          */
         return $class::convertToRecipe($value)->resolve($this);
     }

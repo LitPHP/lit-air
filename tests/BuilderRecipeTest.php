@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Lit\Air\Tests;
 
 use Lit\Air\Psr\Container;
-use Lit\Air\Recipe\MultitonRecipe;
+use Lit\Air\Recipe\BuilderRecipe;
 
-class MultitonRecipeTest extends AbstractTestCase
+class BuilderRecipeTest extends AbstractTestCase
 {
-
     public function testSmoke()
     {
         $key = self::randKey();
@@ -19,9 +18,9 @@ class MultitonRecipeTest extends AbstractTestCase
             $counter++;
             return $obj;
         };
-        $stub = Container::multiton($factory);
+        $stub = Container::builder($factory);
 
-        self::assertTrue($stub instanceof MultitonRecipe);
+        self::assertTrue($stub instanceof BuilderRecipe);
 
         $this->container->define($key, $stub);
 

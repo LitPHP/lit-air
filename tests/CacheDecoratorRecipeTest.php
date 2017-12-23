@@ -21,7 +21,7 @@ class CacheDecoratorRecipeTest extends AbstractTestCase
             $counter++;
             return $obj;
         };
-        $stub = Container::multiton($factory)->cached();
+        $stub = Container::builder($factory)->cached();
 
         self::assertTrue($stub instanceof CacheDecorator);
 

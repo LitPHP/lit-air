@@ -96,6 +96,7 @@ class Factory
      * @param string $className
      * @param array $extraParameters
      * @return object of $className«
+     * @throws \Psr\Container\ContainerExceptionInterface
      */
     public function produce($className, array $extraParameters = [])
     {
@@ -114,6 +115,11 @@ class Factory
         return $instance;
     }
 
+    /**
+     * @param $obj
+     * @param array $extra
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     public function inject($obj, array $extra = []): void
     {
         if (!$this->container->has(Container::KEY_INJECTORS)) {
@@ -129,6 +135,14 @@ class Factory
         }
     }
 
+    /**
+     * @param $className
+     * @param array $keys
+     * @param null $dependencyClassName
+     * @param array $extra
+     * @return mixed|object
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     public function produceDependency($className, array $keys, $dependencyClassName = null, array $extra = [])
     {
         if ($value = $this->produceFromClass($className, $keys, $extra)) {
@@ -146,6 +160,13 @@ class Factory
         throw new ContainerException('failed to produce dependency');
     }
 
+    /**
+     * @param $className
+     * @param array $keys
+     * @param array $extra
+     * @return array|null
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     protected function produceFromClass($className, array $keys, array $extra = [])
     {
         $currentClassName = $className;
@@ -187,6 +208,13 @@ class Factory
         );
     }
 
+    /**
+     * @param $className
+     * @param \ReflectionParameter $parameter
+     * @param array $extraParameters
+     * @return mixed|object
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
     protected function resolveParam($className, \ReflectionParameter $parameter, array $extraParameters)
     {
         $hash = sprintf('%s#%d', $className, $parameter->getPosition());

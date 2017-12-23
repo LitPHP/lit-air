@@ -6,6 +6,7 @@ namespace Lit\Air;
 
 use Lit\Air\Psr\Container;
 use Lit\Air\Psr\ContainerException;
+use Lit\Air\Recipe\BuilderRecipe;
 use Lit\Air\Recipe\Decorator\AbstractRecipeDecorator;
 use Lit\Air\Recipe\Decorator\CacheDecorator;
 use Lit\Air\Recipe\Decorator\CallbackDecorator;
@@ -38,7 +39,7 @@ class Configurator
         }
 
         if (is_callable($value)) {
-            return Container::singleton($value);
+            return new SingletonDecorator(new BuilderRecipe($value));
         }
 
         if (is_array($value) && array_key_exists(0, $value) && isset($value['$'])) {
@@ -104,6 +105,22 @@ class Configurator
         ];
     }
 
+    public static function builder(callable $builder): array
+    {
+        return [
+            '$' => 'builder',
+            $builder,
+        ];
+    }
+
+    public static function value($value): array
+    {
+        return [
+            '$' => 'value',
+            $value,
+        ];
+    }
+
     protected static function write(Container $container, $key, $value)
     {
         if (is_scalar($value) || is_resource($value)) {
@@ -159,8 +176,7 @@ class Configurator
             'alias' => 1,
             'autowire' => 1,
             'instance' => 1,
-            'multiton' => 1,
-            'singleton' => 1,
+            'builder' => 1,
             'value' => 1,
         ])) {
             $valueDecorator = $value['decorator'] ?? null;
