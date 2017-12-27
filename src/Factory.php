@@ -85,7 +85,7 @@ class Factory
         } elseif ($method instanceof \ReflectionMethod) {
             $name = sprintf('Method@%s::%s', $method->getDeclaringClass()->name, $method->name);
         } else {
-            $name = (string) $method;
+            $name = (string)$method;
             $name = substr($name, 0, strpos($name, "{\n"));
         }
 
@@ -98,7 +98,7 @@ class Factory
      * @return object of $className«
      * @throws \Psr\Container\ContainerExceptionInterface
      */
-    public function produce($className, array $extraParameters = [])
+    public function produce(string $className, array $extraParameters = [])
     {
         if ($this->container->hasCacheEntry($className)) {
             return $this->container->get($className);
@@ -113,6 +113,20 @@ class Factory
         $this->container->set($className, $instance);
 
         return $instance;
+    }
+
+    /**
+     * @param string $className
+     * @return object of $className
+     * @throws \Psr\Container\ContainerExceptionInterface
+     */
+    public function getOrProduce(string $className)
+    {
+        $recipe = $this->container->getRecipe($className);
+        if ($recipe) {
+            return $this->container->get($className);
+        }
+        return $this->produce($className);
     }
 
     /**
