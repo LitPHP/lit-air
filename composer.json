@@ -10,13 +10,11 @@
   ],
   "autoload": {
     "psr-4": {
-      "Lit\\Air\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Lit\\Air\\Tests\\": "tests"
-    }
+      "Lit\\Air\\": ""
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
   },
   "provide": {
     "psr/container-implementation": "^1.0"
