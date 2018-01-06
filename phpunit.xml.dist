@@ -7,7 +7,7 @@
 >
     <testsuites>
         <testsuite name="Air Test Suite">
-            <directory>./tests</directory>
+            <directory>./Tests</directory>
         </testsuite>
     </testsuites>
     <filter>
